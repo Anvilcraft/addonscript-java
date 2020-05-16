@@ -138,7 +138,7 @@ public class AddonscriptJSON extends JSON {
         public String id;
         /**
          * The type of this repository
-         * Currently supported: curseforge
+         * Currently supported: curseforge, forge
          */
         public String type;
         /**
@@ -195,7 +195,8 @@ public class AddonscriptJSON extends JSON {
          */
         public String installer = "internal.dir:mods";
         /**
-         * A link to the file or another Addonscript JSON file
+         * A link to the file, a link to another Addonscript JSON file or an artifact String
+         * Artifact String format: <repository id>:<repository specific string>
          */
         public String file;
         /**
@@ -203,11 +204,6 @@ public class AddonscriptJSON extends JSON {
          * Supported type: included, required, recommended, optional or incompatible
          */
         public String type = "included";
-        /**
-         * A String which represents the file as an artifact.
-         * Format: <repository id>:<repository specific string>
-         */
-        public String artifact;
         /**
          * Informations about the version of the addons
          * Only useable when using a link to a Addonscript JSON file
