@@ -27,11 +27,6 @@ public class AddonscriptJSON extends JSON {
     public String id;
 
     /**
-     * The name of the addon
-     */
-    public String name;
-
-    /**
      * The type of the addon
      * For example mod or modpack
      */
@@ -43,19 +38,9 @@ public class AddonscriptJSON extends JSON {
     public String extScript;
 
     /**
-     * The Minecraft versions, which are compatile with this addon
-     */
-    public List<String> mcversion;
-
-    /**
      * A list of versions of this addon
      */
     public List<Version> versions;
-
-    /**
-     * A list of the contributors of this addon
-     */
-    public List<Contributor> contributors;
 
     /**
      * A list of repositories this file uses
@@ -84,6 +69,10 @@ public class AddonscriptJSON extends JSON {
          * Can be -1 if this file uses only one version
          */
         public int versionid;
+        /**
+         * The Minecraft versions, which are compatile with this version
+         */
+        public List<String> mcversion;
         /**
          * The changelog of this version
          */
@@ -117,17 +106,43 @@ public class AddonscriptJSON extends JSON {
          */
         public String name;
         /**
-         * The role of the contributor
+         * The roles of the contributor
          * (for example: author, developer, owner ...)
          */
-        public String role;
+        public List<String> roles;
     }
 
     public static class Meta {
         /**
+         * The name of the addon
+         */
+        public String name;
+
+        /**
          * A link to the icon of this addon
          */
         public String icon;
+
+        /**
+         * A list of the contributors of this addon
+         */
+        public List<Contributor> contributors;
+
+        /**
+         * The website of the addon
+         */
+        public String website;
+
+        /**
+         * The description of the addon
+         */
+        public List<String> description;
+
+        /**
+         * A link to an external description
+         */
+        public String extdescr;
+
     }
 
     public static class Repository {
@@ -209,6 +224,14 @@ public class AddonscriptJSON extends JSON {
          * Only useable when using a link to a Addonscript JSON file
          */
         public VersionData version;
+
+        /**
+         * Meta information for this relation
+         * This is not always useful, because some repositories, like curseforge, are
+         * already exposing this information
+         */
+        public Meta meta;
+
         /**
          * Should this file be on the client?
          */
