@@ -9,12 +9,13 @@ sourceCompatibility = 1.8
 
 repositories {
     mavenCentral()
+    maven { url 'https://jitpack.io' }
 }
 
 dependencies {
     compile 'com.google.code.gson:gson:+'
     compile 'org.apache.maven:maven-core:+'
     compile 'org.python:jython:2.7.0'
-
+    compile "com.github.TheRandomLabs:CurseAPI:master-SNAPSHOT"
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }

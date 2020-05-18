@@ -3,13 +3,12 @@ package ley.anvil.addonscript.util;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.io.Reader;
+import java.io.Writer;
 
 public abstract class JSON {
 
-    public static Gson gson = new GsonBuilder().create();
+    public static Gson gson = new GsonBuilder().setPrettyPrinting().create();
     
     public String toJSON() {
         return gson.toJson(this);
@@ -20,14 +19,16 @@ public abstract class JSON {
         return toJSON();
     }
 
-    public String toFormattedJSON() {
-        return formatJSON(toJSON());
+    public void write(Writer writer) {
+        gson.toJson(this, writer);
     }
 
+    public static <T> T read(Reader reader, Class<T> type) {
+        return gson.fromJson(reader, type);
+    }
 
-    public static String formatJSON(String json) {
-        //TODO JSON formatting
-        return json;
+    public static <T> T fromJSON(String json, Class<T> type) {
+        return gson.fromJson(json, type);
     }
     
 }

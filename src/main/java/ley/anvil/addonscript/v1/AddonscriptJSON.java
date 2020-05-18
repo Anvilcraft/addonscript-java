@@ -7,7 +7,7 @@ import java.util.List;
 public class AddonscriptJSON extends JSON {
 
     public static AddonscriptJSON fromJSON(String json) {
-        return gson.fromJson(json, AddonscriptJSON.class);
+        return fromJSON(json, AddonscriptJSON.class);
     }
 
     public static AddonscriptJSON create() {
@@ -177,6 +177,14 @@ public class AddonscriptJSON extends JSON {
 
     public static class File {
         /**
+         * The ID of this file.
+         * If multiple files have the same ID,
+         * Addonscript will interpret this files as identical.
+         * Addonscript will then try to install the first of them
+         * and only if this fails, it will try the next.
+         */
+        public String id;
+        /**
          * The installer for this file
          * Format: <installerid>:<param 1>:<param 2>...
          * Installer ID can be internal.<some internal installer>
@@ -220,12 +228,6 @@ public class AddonscriptJSON extends JSON {
          */
         public String type = "included";
         /**
-         * Informations about the version of the addons
-         * Only useable when using a link to a Addonscript JSON file
-         */
-        public VersionData version;
-
-        /**
          * Meta information for this relation
          * This is not always useful, because some repositories, like curseforge, are
          * already exposing this information
@@ -246,26 +248,5 @@ public class AddonscriptJSON extends JSON {
         public boolean required = true;
 
     }
-
-    /**
-     * Currently useless
-     */
-    public static class VersionData {
-
-        public String version;
-
-        public int versionID;
-
-        public int minVersion;
-
-        public int maxVersion;
-
-        public boolean openUp;
-
-        public boolean openDown;
-
-    }
-
-
 
 }
