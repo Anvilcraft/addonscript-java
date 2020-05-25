@@ -1,5 +1,6 @@
 package ley.anvil.addonscript.curse;
 
+import com.therandomlabs.curseapi.file.CurseFile;
 import ley.anvil.addonscript.v1.AddonscriptJSON;
 
 import java.util.ArrayList;

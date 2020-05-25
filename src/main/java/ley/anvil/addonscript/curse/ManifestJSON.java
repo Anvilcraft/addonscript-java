@@ -1,8 +1,10 @@
 package ley.anvil.addonscript.curse;
 
+import ley.anvil.addonscript.forge.ForgeTools;
 import ley.anvil.addonscript.util.JSON;
 import ley.anvil.addonscript.v1.AddonscriptJSON;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ManifestJSON extends JSON {
@@ -35,6 +37,18 @@ public class ManifestJSON extends JSON {
     public static class Modloader {
         public String id;
         public boolean primary;
+
+        public AddonscriptJSON.Relation toRelation() {
+            if (id != null && id.startsWith("forge-")) {
+                AddonscriptJSON.Relation rel = new AddonscriptJSON.Relation();
+                rel.installer = "internal.forge";
+                rel.type = "included";
+                rel.file = id.replaceAll("forge-", "");
+                return rel;
+            }
+            return null;
+        }
+
     }
 
     public static class File {
@@ -48,6 +62,57 @@ public class ManifestJSON extends JSON {
             return rel;
         }
 
+    }
+
+    AddonscriptJSON.Contributor getAuthor() {
+        AddonscriptJSON.Contributor author = new AddonscriptJSON.Contributor();
+        author.name = this.author;
+        author.roles = new ArrayList<>();
+        author.roles.add("author");
+        return author;
+    }
+
+    AddonscriptJSON.Version getVersion() {
+        AddonscriptJSON.Version version = new AddonscriptJSON.Version();
+        version.versionid = -1;
+        version.versionname = this.version;
+        version.mcversion = new ArrayList<>();
+        version.mcversion.add(minecraft.version);
+        version.files = new ArrayList<>();
+        version.relations = new ArrayList<>();
+
+        AddonscriptJSON.File overrides = new AddonscriptJSON.File();
+        overrides.id = "overrides";
+        overrides.file = this.overrides;
+        version.files.add(overrides);
+
+        for (File f : files) {
+            version.relations.add(f.toRelation());
+        }
+
+        if (minecraft != null) {
+            for (Modloader l : minecraft.modLoaders) {
+                version.relations.add(l.toRelation());
+            }
+        }
+        
+        return version;
+    }
+
+    public AddonscriptJSON toAS() {
+        AddonscriptJSON as = AddonscriptJSON.create();
+        as.type = "modpack";
+        as.id = name;
+        as.meta = new AddonscriptJSON.Meta();
+        as.meta.contributors = new ArrayList<>();
+        as.versions = new ArrayList<>();
+        as.meta.contributors.add(getAuthor());
+        as.versions.add(getVersion());
+
+        CurseTools.addCurseRepo(as);
+        ForgeTools.addForgeRepo(as);
+
+        return as;
     }
 
 }
