@@ -74,13 +74,9 @@ public class AddonscriptJSON extends JSON {
          */
         public List<String> mcversion;
         /**
-         * The changelog of this version
+         * Meta Information about this version
          */
-        public List<String> changelog;
-        /**
-         * The UNIX Timestamp when this version was released
-         */
-        public int timestamp;
+        public VersionMeta meta;
         /**
          * A link to another Addonscript JSON file, which handles this version
          */
@@ -145,6 +141,17 @@ public class AddonscriptJSON extends JSON {
 
     }
 
+    public static class VersionMeta {
+        /**
+         * The changelog of this version
+         */
+        public List<String> changelog;
+        /**
+         * The UNIX Timestamp when this version was released
+         */
+        public int timestamp;
+    }
+
     public static class Repository {
         /**
          * The ID of this repository
@@ -196,17 +203,14 @@ public class AddonscriptJSON extends JSON {
          */
         public String file;
         /**
-         * Should this file be on the client?
+         * A list of parameters for this file.
+         * Currently supportet parameters:
+         * "required" - This file is required for the addon
+         * "optional" - This file is optional for the addon
+         * "client" - This file works on the client side
+         * "server" - This file works on the server side
          */
-        public boolean client = true;
-        /**
-         * Should this file be on the server?
-         */
-        public boolean server = true;
-        /**
-         * Is this file required or optional?
-         */
-        public boolean required = true;
+        public List<String> params;
 
     }
 
@@ -235,17 +239,14 @@ public class AddonscriptJSON extends JSON {
         public Meta meta;
 
         /**
-         * Should this file be on the client?
+         * A list of parameters for this relation.
+         * Currently supportet parameters:
+         * "required" - This relation is required for the addon
+         * "optional" - This relation is optional for the addon
+         * "client" - This relation works on the client side
+         * "server" - This relation works on the server side
          */
-        public boolean client = true;
-        /**
-         * Should this file be on the server?
-         */
-        public boolean server = true;
-        /**
-         * Is this file required or optional?
-         */
-        public boolean required = true;
+        public List<String> params;
 
     }
 
