@@ -1,6 +1,5 @@
 package ley.anvil.addonscript.curse;
 
-import com.therandomlabs.curseapi.file.CurseFile;
 import ley.anvil.addonscript.v1.AddonscriptJSON;
 
 import java.util.ArrayList;
@@ -27,7 +26,19 @@ public class CurseTools {
     }
 
     public static String toArtifact(int projectID, int fileID) {
-        return "curse:" + projectID + ":" + fileID;
+        return "curse>" + projectID + ":" + fileID;
+    }
+
+    public static boolean isCurseArtifact(String artifact, AddonscriptJSON as) {
+        String[] parts = artifact.split(">");
+        if (parts.length == 2 && as.repositories != null) {
+            for (AddonscriptJSON.Repository repo : as.repositories) {
+                if (repo.type != null && repo.type.equals("curseforge") && parts[0].equals(repo.id)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
 }

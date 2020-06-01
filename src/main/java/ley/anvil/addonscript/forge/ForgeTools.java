@@ -44,7 +44,7 @@ public class ForgeTools {
                 rel.type = "included";
             }
             rel.installer = "internal.forge";
-            rel.file = forgeVersion;
+            rel.file = "forge>"+ forgeVersion;
             if (ver.relations == null) {
                 ver.relations = new ArrayList<>();
             }
