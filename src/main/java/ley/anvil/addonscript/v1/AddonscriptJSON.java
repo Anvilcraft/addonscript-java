@@ -35,7 +35,7 @@ public class AddonscriptJSON extends JSON {
     /**
      * A link to an external AddonScript file which should be loaded instead of this
      */
-    public String extScript;
+    public String external;
 
     /**
      * A list of versions of this addon
@@ -80,7 +80,7 @@ public class AddonscriptJSON extends JSON {
         /**
          * A link to another Addonscript JSON file, which handles this version
          */
-        public String extScript;
+        public String external;
         /**
          * A list of files of this version
          */
@@ -223,7 +223,7 @@ public class AddonscriptJSON extends JSON {
         public String installer = "internal.dir:mods";
         /**
          * A link to the file, a link to another Addonscript JSON file or an artifact String
-         * Artifact String format: <repository id>:<repository specific string>
+         * Artifact String format: <repository id>><repository specific string>
          */
         public String file;
         /**
