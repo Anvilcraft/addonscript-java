@@ -177,6 +177,9 @@ public class AddonscriptJSON extends ASBase {
 
     }
 
+    /**
+     *
+     */
     public static class File {
         /**
          * The ID of this file.
@@ -188,8 +191,8 @@ public class AddonscriptJSON extends ASBase {
         public String id;
         /**
          * The installer for this file
-         * Format: <installerid>:<param 1>:<param 2>...
-         * Installer ID can be internal.<some internal installer>
+         * Format: &lt;installerid&gt;:&lt;param 1&gt;:&lt;param 2&gt;...
+         * Installer ID can be internal.&lt;some internal installer&gt;
          */
         public String installer = "internal.override";
         /**
@@ -199,7 +202,7 @@ public class AddonscriptJSON extends ASBase {
         public String file;
         /**
          * A list of parameters for this file.
-         * Currently supportet parameters:
+         * Currently supported parameters:
          * "required" - This file is required for the addon
          * "optional" - This file is optional for the addon
          * "client" - This file works on the client side
@@ -217,13 +220,13 @@ public class AddonscriptJSON extends ASBase {
         public String id;
         /**
          * The installer for this file
-         * Format: <installerid>:<param 1>:<param 2>...
-         * Installer ID can be internal.<some internal installer>
+         * Format: &lt;installerid&gt;:&lt;param 1&gt;:&lt;param 2&gt;...
+         * Installer ID can be internal.&lt;some internal installer&gt;
          */
         public String installer = "internal.dir:mods";
         /**
          * A link to the file, a link to another Addonscript JSON file or an artifact String
-         * Artifact String format: <repository id>><repository specific string>
+         * Artifact String format: &lt;repository id&gt;&gt;&lt;repository specific string&gt;
          */
         public String file;
         /**
