@@ -1,10 +1,10 @@
 package ley.anvil.addonscript.v1;
 
-import ley.anvil.addonscript.util.JSON;
+import ley.anvil.addonscript.util.ASBase;
 
 import java.util.List;
 
-public class AddonscriptJSON extends JSON {
+public class AddonscriptJSON extends ASBase {
 
     public static AddonscriptJSON fromJSON(String json) {
         return fromJSON(json, AddonscriptJSON.class);
@@ -15,11 +15,6 @@ public class AddonscriptJSON extends JSON {
         as.asversion = 1;
         return as;
     }
-
-    /**
-     * The version of the AddonScript file
-     */
-    public int asversion;
 
     /**
      * The ID of the addon
@@ -216,6 +211,11 @@ public class AddonscriptJSON extends JSON {
 
     public static class Relation {
         /**
+         * The ID of the relation
+         * This should be unique in this Addonscript file
+         */
+        public String id;
+        /**
          * The installer for this file
          * Format: <installerid>:<param 1>:<param 2>...
          * Installer ID can be internal.<some internal installer>
@@ -237,7 +237,6 @@ public class AddonscriptJSON extends JSON {
          * already exposing this information
          */
         public Meta meta;
-
         /**
          * A list of parameters for this relation.
          * Currently supportet parameters:

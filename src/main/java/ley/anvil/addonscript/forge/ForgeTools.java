@@ -39,6 +39,7 @@ public class ForgeTools {
         }
         if (ver != null) {
             AddonscriptJSON.Relation rel = new AddonscriptJSON.Relation();
+            rel.id = "forge";
             rel.type = "required";
             if (as.type != null && as.type.equals("modpack")) {
                 rel.type = "included";

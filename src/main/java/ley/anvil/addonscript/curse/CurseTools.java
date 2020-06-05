@@ -1,8 +1,12 @@
 package ley.anvil.addonscript.curse;
 
+import com.therandomlabs.curseapi.CurseAPI;
+import com.therandomlabs.curseapi.CurseException;
+import com.therandomlabs.curseapi.project.CurseProject;
 import ley.anvil.addonscript.v1.AddonscriptJSON;
 
 import java.util.ArrayList;
+import java.util.Optional;
 
 public class CurseTools {
 
@@ -39,6 +43,19 @@ public class CurseTools {
             }
         }
         return false;
+    }
+
+    public static String getID(int projectID) {
+        try {
+            Optional<CurseProject> project = CurseAPI.project(projectID);
+            if (project.isPresent()) {
+                CurseProject proj = project.get();
+                return proj.slug();
+            }
+        } catch (CurseException e) {
+            return "NOID";
+        }
+        return "NOID";
     }
 
 }
