@@ -8,7 +8,7 @@ import java.io.Writer;
 
 public abstract class JSON {
 
-    public static Gson gson = new GsonBuilder().setPrettyPrinting().create();
+    public static Gson gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
     
     public String toJSON() {
         return gson.toJson(this);
