@@ -1,19 +1,49 @@
 package ley.anvil.addonscript.v1;
 
+import ley.anvil.addonscript.curse.CurseforgeRepository;
+import ley.anvil.addonscript.python.PythonInstaller;
 import ley.anvil.addonscript.util.ASBase;
+import ley.anvil.addonscript.installer.IInstaller;
+import ley.anvil.addonscript.util.IRepository;
+import ley.anvil.addonscript.installer.InternalDirInstaller;
 
+import java.io.Reader;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class AddonscriptJSON extends ASBase {
 
+    public Map<String, IInstaller> INSTALLERS;
+    public Map<String, IRepository> REPOSITORIES;
+
     public static AddonscriptJSON fromJSON(String json) {
         return fromJSON(json, AddonscriptJSON.class);
+    }
+
+    public static AddonscriptJSON read(Reader reader) {
+        return read(reader, AddonscriptJSON.class);
     }
 
     public static AddonscriptJSON create() {
         AddonscriptJSON as = new AddonscriptJSON();
         as.asversion = 1;
         return as;
+    }
+
+    public AddonscriptJSON() {
+        INSTALLERS = new HashMap<>();
+        REPOSITORIES = new HashMap<>();
+    }
+
+    public void setup() {
+        INSTALLERS.put("internal.dir", new InternalDirInstaller());
+        for (Installer i : installers) {
+            INSTALLERS.put(i.id, i.getInstaller());
+        }
+        for (Repository r : repositories) {
+            REPOSITORIES.put(r.id, r.getRepository());
+        }
     }
 
     /**
@@ -28,9 +58,14 @@ public class AddonscriptJSON extends ASBase {
     public String type;
 
     /**
-     * A link to an external AddonScript file which should be loaded instead of this
+     * External Addonscript files for this Addon, specific versions of specific editions
      */
-    public String external;
+    public List<External> external;
+
+    /**
+     * Links to external Addonscript files, that should be applied/merged to this
+     */
+    public List<String> apply;
 
     /**
      * A list of versions of this addon
@@ -72,10 +107,6 @@ public class AddonscriptJSON extends ASBase {
          * Meta Information about this version
          */
         public VersionMeta meta;
-        /**
-         * A link to another Addonscript JSON file, which handles this version
-         */
-        public String external;
         /**
          * A list of files of this version
          */
@@ -162,6 +193,14 @@ public class AddonscriptJSON extends ASBase {
          * The base url of this repository
          */
         public String url;
+
+        public IRepository getRepository() {
+            switch (type) {
+                case "curseforge": return new CurseforgeRepository();
+                default: return null;
+            }
+        }
+
     }
 
     public static class Installer {
@@ -175,6 +214,9 @@ public class AddonscriptJSON extends ASBase {
          */
         public String link;
 
+        public IInstaller getInstaller() {
+            return new PythonInstaller(link);
+        }
     }
 
     /**
@@ -199,20 +241,32 @@ public class AddonscriptJSON extends ASBase {
          * A link or relative path to this file.
          * It can also be a path to a directory, if the installer supports directories
          */
-        public String file;
+        public Artifact file;
         /**
-         * A list of parameters for this file.
+         * A list of options for this file.
          * Currently supported parameters:
          * "required" - This file is required for the addon
          * "optional" - This file is optional for the addon
          * "client" - This file works on the client side
          * "server" - This file works on the server side
          */
-        public List<String> params;
+        public List<String> options;
+
+        public boolean server() {
+            return options != null && options.contains("server");
+        }
+
+        public boolean client() {
+            return options != null && options.contains("client");
+        }
 
     }
 
     public static class Relation {
+        /**
+         * An external Addonscript for this relation
+         */
+        public Script script;
         /**
          * The ID of the relation
          * This should be unique in this Addonscript file
@@ -225,15 +279,15 @@ public class AddonscriptJSON extends ASBase {
          */
         public String installer = "internal.dir:mods";
         /**
-         * A link to the file, a link to another Addonscript JSON file or an artifact String
-         * Artifact String format: &lt;repository id&gt;&gt;&lt;repository specific string&gt;
+         * The file of this relation
+         * Can be a direct link or an artifact from a repository
          */
-        public String file;
+        public Artifact file;
         /**
-         * The type of this relation
-         * Supported type: included, required, recommended, optional or incompatible
+         * The addon type of this relation
+         * For example: mod, modloader, config, script...
          */
-        public String type = "included";
+        public String type;
         /**
          * Meta information for this relation
          * This is not always useful, because some repositories, like curseforge, are
@@ -241,14 +295,48 @@ public class AddonscriptJSON extends ASBase {
          */
         public Meta meta;
         /**
-         * A list of parameters for this relation.
+         * A list of options for this relation.
          * Currently supportet parameters:
          * "required" - This relation is required for the addon
          * "optional" - This relation is optional for the addon
          * "client" - This relation works on the client side
          * "server" - This relation works on the server side
+         * "included" - This relation is included in this addon (if this is a modpack)
+         * "recommended" - This relation is recomended but not required for this addon
+         * "incompatible" - This relation is incompatible with this addon
          */
-        public List<String> params;
+        public List<String> options;
+
+        public boolean server() {
+            return options != null && options.contains("server");
+        }
+
+        public boolean client() {
+            return options != null && options.contains("client");
+        }
+
+    }
+
+    public static class External {
+
+        public int versionid;
+        public String edition;
+        public String link;
+
+    }
+
+    public static class Script {
+
+        public String link;
+        public String version;
+
+    }
+
+    public static class Artifact {
+
+        public String link;
+        public String path;
+        public String artifact;
 
     }
 
