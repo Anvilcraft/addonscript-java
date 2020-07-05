@@ -1,10 +1,10 @@
 package ley.anvil.addonscript.python;
 
-import ley.anvil.addonscript.util.IInstaller;
-import org.python.core.PyString;
+import ley.anvil.addonscript.installer.IInstaller;
 import org.python.util.PythonInterpreter;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
@@ -20,8 +20,8 @@ public class PythonInstaller implements IInstaller {
     }
 
     @Override
-    public void install(String[] params, String filelink) {
-        python.set("link", new PyString(filelink));
+    public void install(String[] params, File input) {
+        python.set("input", input.getAbsolutePath());
         python.set("params", params);
         python.exec(script);
     }
