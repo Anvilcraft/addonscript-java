@@ -44,8 +44,9 @@ public class ForgeTools {
             if (as.type != null && as.type.equals("modpack")) {
                 rel.type = "included";
             }
-            rel.installer = "internal.forge";
-            rel.file = "forge>"+ forgeVersion;
+            rel.file = new AddonscriptJSON.File();
+            rel.file.installer = "internal.forge";
+            rel.file.artifact = "forge:"+ forgeVersion;
             if (ver.relations == null) {
                 ver.relations = new ArrayList<>();
             }

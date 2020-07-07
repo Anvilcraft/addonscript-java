@@ -45,7 +45,7 @@ public class AddonscriptJSON extends ASBase {
             REPOSITORIES.put(r.id, r.getRepository());
         }
     }
-
+    
     /**
      * The ID of the addon
      */
@@ -58,11 +58,13 @@ public class AddonscriptJSON extends ASBase {
     public String type;
 
     /**
+     * Optional
      * External Addonscript files for this Addon, specific versions of specific editions
      */
     public List<External> external;
 
     /**
+     * Optional
      * Links to external Addonscript files, that should be applied/merged to this
      */
     public List<String> apply;
@@ -83,6 +85,7 @@ public class AddonscriptJSON extends ASBase {
     public List<Installer> installers;
 
     /**
+     * Optional
      * Meta information for this addon
      */
     public Meta meta;
@@ -236,13 +239,26 @@ public class AddonscriptJSON extends ASBase {
          * Format: &lt;installerid&gt;:&lt;param 1&gt;:&lt;param 2&gt;...
          * Installer ID can be internal.&lt;some internal installer&gt;
          */
-        public String installer = "internal.override";
+        public String installer = "internal.dir:mods";
         /**
-         * A link or relative path to this file.
+         * Optional: Use this, path or artifact
+         * A link to this file.
+         */
+        public String link;
+        /**
+         * Optional: Use this, link or artifact
+         * A relative path to this file.
          * It can also be a path to a directory, if the installer supports directories
          */
-        public Artifact file;
+        public String path;
         /**
+         * Optional: Use this, link or path
+         * An artifact from a repository, which is this file
+         */
+        public String artifact;
+        /**
+         * Optional: Defaults if empty
+         * (Defaults = required, client, server)
          * A list of options for this file.
          * Currently supported parameters:
          * "required" - This file is required for the addon
@@ -264,6 +280,7 @@ public class AddonscriptJSON extends ASBase {
 
     public static class Relation {
         /**
+         * Optional: Use either this or file
          * An external Addonscript for this relation
          */
         public Script script;
@@ -273,28 +290,26 @@ public class AddonscriptJSON extends ASBase {
          */
         public String id;
         /**
-         * The installer for this file
-         * Format: &lt;installerid&gt;:&lt;param 1&gt;:&lt;param 2&gt;...
-         * Installer ID can be internal.&lt;some internal installer&gt;
-         */
-        public String installer = "internal.dir:mods";
-        /**
+         * Optional: Use either this or script
          * The file of this relation
          * Can be a direct link or an artifact from a repository
          */
-        public Artifact file;
+        public File file;
         /**
          * The addon type of this relation
          * For example: mod, modloader, config, script...
          */
         public String type;
         /**
+         * Optional
          * Meta information for this relation
          * This is not always useful, because some repositories, like curseforge, are
          * already exposing this information
          */
         public Meta meta;
         /**
+         * Optional: Defaults if empty
+         * (Defaults = required[included instead, if this is a modpack], client, server)
          * A list of options for this relation.
          * Currently supportet parameters:
          * "required" - This relation is required for the addon
@@ -318,26 +333,49 @@ public class AddonscriptJSON extends ASBase {
     }
 
     public static class External {
-
+        /**
+         * Optional: Wildcard if empty
+         * The versionid of the version, for which this external script should be used
+         */
         public int versionid;
+        /**
+         * Optional: Wildcard if empty
+         * The edition id of the edition, for which this external script should be used
+         */
         public String edition;
+        /**
+         * The link to the external script
+         */
         public String link;
-
     }
 
     public static class Script {
-
+        /**
+         * The link to the script
+         */
         public String link;
+        /**
+         * Optional: Wildcard if empty
+         * A version range string, which specifies, which versions of the addon can be used
+         */
         public String version;
-
     }
 
-    public static class Artifact {
-
-        public String link;
-        public String path;
-        public String artifact;
-
+    public static class Edition {
+        /**
+         * The id of the edition
+         */
+        public String id;
+        /**
+         * Optional: Wildcard if empty
+         * A version range string, which specifies, which versions have this edition
+         */
+        public String version;
+        /**
+         * Optional
+         * Meta information about this edition
+         */
+        public Meta meta;
     }
 
 }

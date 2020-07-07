@@ -29,8 +29,10 @@ public class CurseTools {
         }
     }
 
-    public static String toArtifact(int projectID, int fileID) {
-        return "curse>" + projectID + ":" + fileID;
+    public static AddonscriptJSON.File toArtifact(int projectID, int fileID) {
+        AddonscriptJSON.File artifact = new AddonscriptJSON.File();
+        artifact.artifact = "curse:" + projectID + ":" + fileID;
+        return artifact;
     }
 
     public static boolean isCurseArtifact(String artifact, AddonscriptJSON as) {

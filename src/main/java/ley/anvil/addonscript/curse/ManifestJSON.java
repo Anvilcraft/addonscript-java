@@ -41,9 +41,10 @@ public class ManifestJSON extends JSON {
         public AddonscriptJSON.Relation toRelation() {
             if (id != null && id.startsWith("forge-")) {
                 AddonscriptJSON.Relation rel = new AddonscriptJSON.Relation();
-                rel.installer = "internal.forge";
                 rel.type = "included";
-                rel.file = id.replaceAll("forge-", "");
+                rel.file = new AddonscriptJSON.File();
+                rel.file.installer = "internal.forge";
+                rel.file.artifact = "forge:" + id.replaceAll("forge-", "");
                 return rel;
             }
             return null;
@@ -59,6 +60,8 @@ public class ManifestJSON extends JSON {
         public AddonscriptJSON.Relation toRelation() {
             AddonscriptJSON.Relation rel = new AddonscriptJSON.Relation();
             rel.file = CurseTools.toArtifact(projectID, fileID);
+            rel.options = new ArrayList<>();
+            rel.options.add(required ? "required" : "optional");
             return rel;
         }
 
@@ -83,7 +86,8 @@ public class ManifestJSON extends JSON {
 
         AddonscriptJSON.File overrides = new AddonscriptJSON.File();
         overrides.id = "overrides";
-        overrides.file = this.overrides;
+        overrides.installer = "internal.override";
+        overrides.path = this.overrides;
         version.files.add(overrides);
 
         for (File f : files) {
