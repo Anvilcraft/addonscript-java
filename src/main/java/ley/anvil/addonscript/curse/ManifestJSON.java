@@ -78,7 +78,7 @@ public class ManifestJSON extends JSON {
     AddonscriptJSON.Version getVersion() {
         AddonscriptJSON.Version version = new AddonscriptJSON.Version();
         version.versionid = -1;
-        version.versionname = this.version;
+        version.version = this.version;
         version.mcversion = new ArrayList<>();
         version.mcversion.add(minecraft.version);
         version.files = new ArrayList<>();

@@ -16,7 +16,7 @@ public class CurseTools {
         }
         boolean alreadyAdded = false;
         for (AddonscriptJSON.Repository repo : as.repositories) {
-            if (repo.id != null && repo.id.equals("curse")) {
+            if (repo.type != null && repo.type.equals("curseforge")) {
                 alreadyAdded = true;
             }
         }
@@ -36,12 +36,14 @@ public class CurseTools {
     }
 
     public static boolean isCurseArtifact(String artifact, AddonscriptJSON as) {
-        String[] parts = artifact.split(">");
-        if (parts.length == 2 && as.repositories != null) {
-            for (AddonscriptJSON.Repository repo : as.repositories) {
-                if (repo.type != null && repo.type.equals("curseforge") && parts[0].equals(repo.id)) {
-                    return true;
-                }
+        String[] parts = artifact.split(":");
+        if (parts.length == 3 && parts[0].equals("curse")) {
+            try {
+                int proj = Integer.parseInt(parts[1]);
+                int file = Integer.parseInt(parts[0]);
+                return true;
+            } catch (NumberFormatException e) {
+                return false;
             }
         }
         return false;
