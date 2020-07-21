@@ -14,7 +14,6 @@ repositories {
 
 dependencies {
     compile 'com.google.code.gson:gson:+'
-    compile 'org.apache.maven:maven-core:+'
     compile 'org.python:jython-standalone:2.7.0'
     compile "com.github.TheRandomLabs:CurseAPI:master-SNAPSHOT"
     testCompile group: 'junit', name: 'junit', version: '4.12'
