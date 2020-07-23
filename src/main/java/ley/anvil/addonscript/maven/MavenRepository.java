@@ -19,6 +19,6 @@ public class MavenRepository implements IRepository {
 
     @Override
     public AddonscriptJSON.Meta getMeta(String artifact) {
-        return new AddonscriptJSON.Meta();
+        return null;
     }
 }

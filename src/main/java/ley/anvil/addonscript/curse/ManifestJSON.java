@@ -87,7 +87,7 @@ public class ManifestJSON extends JSON {
         AddonscriptJSON.File overrides = new AddonscriptJSON.File();
         overrides.id = "overrides";
         overrides.installer = "internal.override";
-        overrides.path = this.overrides;
+        overrides.link = "file://" + this.overrides;
         version.files.add(overrides);
 
         for (File f : files) {

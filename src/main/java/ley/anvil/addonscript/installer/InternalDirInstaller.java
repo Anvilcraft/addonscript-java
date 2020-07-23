@@ -9,8 +9,6 @@ import java.nio.file.StandardCopyOption;
 
 public class InternalDirInstaller implements IInstaller {
 
-    public static String ID = "internal.dir";
-
     @Override
     public void install(String[] params, File input) {
         if (params.length >= 1) {

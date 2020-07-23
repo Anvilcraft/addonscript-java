@@ -1,5 +1,6 @@
 package ley.anvil.addonscript.util;
 
+import com.google.gson.annotations.Expose;
 import ley.anvil.addonscript.v1.AddonscriptJSON;
 
 import java.io.Reader;
@@ -14,6 +15,7 @@ public abstract class ASBase extends JSON {
     /**
      * The version of the AddonScript file
      */
+    @Expose
     public int asversion;
 
     public Class<? extends ASBase> getImpl() {

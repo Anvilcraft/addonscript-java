@@ -24,9 +24,10 @@ public class CurseforgeRepository implements IRepository {
 
     @Override
     public AddonscriptJSON.Meta getMeta(String artifact) {
-        AddonscriptJSON.Meta meta = new AddonscriptJSON.Meta();
+        AddonscriptJSON.Meta meta = null;
         CurseFile file = getFile(artifact);
         if (file != null) {
+            meta = new AddonscriptJSON.Meta();
             try {
                 CurseProject project = file.project();
                 meta.name = project.name();
