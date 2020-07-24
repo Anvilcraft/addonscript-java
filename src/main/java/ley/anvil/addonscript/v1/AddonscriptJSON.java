@@ -133,6 +133,25 @@ public class AddonscriptJSON extends ASBase {
             return list;
         }
 
+        public List<Pair<String, String>> getRelLinks(Indexes indexes, String side, boolean optionals, @Nullable String installer, @Nullable String edition) {
+            List<Pair<String, String>> list = new ArrayList<>();
+            for (Relation r : getRelations(side, optionals, edition)) {
+                list.addAll(r.getLinks(indexes, side, optionals, installer, edition));
+            }
+            return list;
+        }
+
+        public List<Pair<String, String>> getLinks(Indexes indexes, String side, boolean optionals, @Nullable String installer, @Nullable String edition) {
+            List<Pair<String, String>> list = new ArrayList<>();
+
+            for (File file : files) {
+                if (file != null && file.hasOption(side) && (installer == null || installer.equals(file.installer) || installer.equals(file.installer.split(":")[0])) && ((file.hasOption("optional") && optionals) || file.hasOption("edition:" + edition) || file.hasOption("required")))
+                    list.add(new Pair<>(file.getLink(indexes), file.installer));
+            }
+
+            return list;
+        }
+
         /**
          * The name of this version
          * (for example: 1.0, 1.1, 2.0)
@@ -383,13 +402,13 @@ public class AddonscriptJSON extends ASBase {
                 Version version = addon.getVersion(versions);
                 if (version != null) {
                     for (File f : version.files) {
-                        if (f != null && f.hasOption(side) && (installer == null || installer.equals(f.installer)) && ((f.hasOption("optional") && optionals) || f.hasOption("edition:" + edition) || f.hasOption("required")))
+                        if (f != null && f.hasOption(side) && (installer == null || installer.equals(f.installer) || installer.equals(f.installer.split(":")[0])) && ((f.hasOption("optional") && optionals) || f.hasOption("edition:" + edition) || f.hasOption("required")))
                             list.add(new Pair<>(f.getLink(indexes), f.installer));
                     }
                 }
             }
 
-            if (file != null && file.hasOption(side) && (installer == null || installer.equals(file.installer)) && ((file.hasOption("optional") && optionals) || file.hasOption("edition:" + edition) || file.hasOption("required")))
+            if (file != null && hasOption(side) && (installer == null || installer.equals(file.installer) || installer.equals(file.installer.split(":")[0])) && ((hasOption("optional") && optionals) || hasOption("edition:" + edition) || hasOption("required")))
                 list.add(new Pair<>(file.getLink(indexes), file.installer));
 
             return list;
