@@ -1,6 +1,5 @@
 package ley.anvil.addonscript.curse;
 
-import ley.anvil.addonscript.forge.ForgeTools;
 import ley.anvil.addonscript.util.JSON;
 import ley.anvil.addonscript.v1.AddonscriptJSON;
 

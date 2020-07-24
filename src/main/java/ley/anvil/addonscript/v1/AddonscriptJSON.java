@@ -1,16 +1,17 @@
 package ley.anvil.addonscript.v1;
 
 import com.google.gson.annotations.Expose;
-import javafx.util.Pair;
 import ley.anvil.addonscript.curse.CurseforgeRepository;
+import ley.anvil.addonscript.forge.ForgeMeta;
+import ley.anvil.addonscript.installer.IInstaller;
+import ley.anvil.addonscript.installer.InternalDirInstaller;
 import ley.anvil.addonscript.maven.MavenRepository;
 import ley.anvil.addonscript.python.PythonInstaller;
 import ley.anvil.addonscript.util.ASBase;
-import ley.anvil.addonscript.installer.IInstaller;
 import ley.anvil.addonscript.util.IRepository;
-import ley.anvil.addonscript.installer.InternalDirInstaller;
 import ley.anvil.addonscript.util.Indexes;
 import ley.anvil.addonscript.util.Utils;
+import ley.anvil.addonscript.wrapper.LinkInstPair;
 import org.python.jline.internal.Nullable;
 
 import java.io.Reader;
@@ -133,20 +134,20 @@ public class AddonscriptJSON extends ASBase {
             return list;
         }
 
-        public List<Pair<String, String>> getRelLinks(Indexes indexes, String side, boolean optionals, @Nullable String installer, @Nullable String edition) {
-            List<Pair<String, String>> list = new ArrayList<>();
+        public List<LinkInstPair> getRelLinks(Indexes indexes, String side, boolean optionals, @Nullable String installer, @Nullable String edition) {
+            List<LinkInstPair> list = new ArrayList<>();
             for (Relation r : getRelations(side, optionals, edition)) {
                 list.addAll(r.getLinks(indexes, side, optionals, installer, edition));
             }
             return list;
         }
 
-        public List<Pair<String, String>> getLinks(Indexes indexes, String side, boolean optionals, @Nullable String installer, @Nullable String edition) {
-            List<Pair<String, String>> list = new ArrayList<>();
+        public List<LinkInstPair> getLinks(Indexes indexes, String side, boolean optionals, @Nullable String installer, @Nullable String edition) {
+            List<LinkInstPair> list = new ArrayList<>();
 
             for (File file : files) {
                 if (file != null && file.hasOption(side) && (installer == null || installer.equals(file.installer) || installer.equals(file.installer.split(":")[0])) && ((file.hasOption("optional") && optionals) || file.hasOption("edition:" + edition) || file.hasOption("required")))
-                    list.add(new Pair<>(file.getLink(indexes), file.installer));
+                    list.add(new LinkInstPair(file.getLink(indexes), file.installer));
             }
 
             return list;
@@ -388,12 +389,14 @@ public class AddonscriptJSON extends ASBase {
                 return indexes.ADDONS.get(id).meta;
             else if(meta != null)
                 return meta;
+            else if (type != null && type.equals("modloader") && id != null && id.equals("forge"))
+                return new ForgeMeta();
             else
                 return file.getMeta(indexes);
         }
 
-        public List<Pair<String, String>> getLinks(Indexes indexes, String side, boolean optionals, @Nullable String installer, @Nullable String edition) {
-            List<Pair<String, String>> list = new ArrayList<>();
+        public List<LinkInstPair> getLinks(Indexes indexes, String side, boolean optionals, @Nullable String installer, @Nullable String edition) {
+            List<LinkInstPair> list = new ArrayList<>();
 
             if (indexes.ADDONS.containsKey(id)) {
                 AddonscriptJSON addon = indexes.ADDONS.get(id);
@@ -403,13 +406,13 @@ public class AddonscriptJSON extends ASBase {
                 if (version != null) {
                     for (File f : version.files) {
                         if (f != null && f.hasOption(side) && (installer == null || installer.equals(f.installer) || installer.equals(f.installer.split(":")[0])) && ((f.hasOption("optional") && optionals) || f.hasOption("edition:" + edition) || f.hasOption("required")))
-                            list.add(new Pair<>(f.getLink(indexes), f.installer));
+                            list.add(new LinkInstPair(f.getLink(indexes), f.installer));
                     }
                 }
             }
 
             if (file != null && hasOption(side) && (installer == null || installer.equals(file.installer) || installer.equals(file.installer.split(":")[0])) && ((hasOption("optional") && optionals) || hasOption("edition:" + edition) || hasOption("required")))
-                list.add(new Pair<>(file.getLink(indexes), file.installer));
+                list.add(new LinkInstPair(file.getLink(indexes), file.installer));
 
             return list;
         }
