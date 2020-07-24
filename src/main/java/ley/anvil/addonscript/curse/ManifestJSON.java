@@ -38,13 +38,17 @@ public class ManifestJSON extends JSON {
         public String id;
         public boolean primary;
 
-        public AddonscriptJSON.Relation toRelation() {
+        public AddonscriptJSON.Relation toRelation(String mcv) {
             if (id != null && id.startsWith("forge-")) {
                 AddonscriptJSON.Relation rel = new AddonscriptJSON.Relation();
-                rel.type = "included";
-                rel.file = new AddonscriptJSON.File();
-                rel.file.installer = "internal.forge";
-                rel.file.artifact = "forge:" + id.replaceAll("forge-", "");
+                rel.type = "modloader";
+                rel.id = "forge";
+                rel.versions = "[" + mcv +  id.replaceAll("forge", "") + "]";
+                rel.options = new ArrayList<>();
+                rel.options.add("required");
+                rel.options.add("client");
+                rel.options.add("required");
+                rel.options.add("included");
                 return rel;
             }
             return null;
@@ -62,6 +66,11 @@ public class ManifestJSON extends JSON {
             rel.file = CurseTools.toArtifact(projectID, fileID);
             rel.options = new ArrayList<>();
             rel.options.add(required ? "required" : "optional");
+            rel.options.add("client");
+            rel.options.add("server");
+            rel.options.add("included");
+            rel.id = "" + projectID;
+            rel.type = "mod";
             return rel;
         }
 
@@ -96,7 +105,7 @@ public class ManifestJSON extends JSON {
 
         if (minecraft != null) {
             for (Modloader l : minecraft.modLoaders) {
-                version.relations.add(l.toRelation());
+                version.relations.add(l.toRelation(minecraft.version));
             }
         }
         
@@ -114,7 +123,6 @@ public class ManifestJSON extends JSON {
         as.versions.add(getVersion());
 
         CurseTools.addCurseRepo(as);
-        ForgeTools.addForgeRepo(as);
 
         return as;
     }

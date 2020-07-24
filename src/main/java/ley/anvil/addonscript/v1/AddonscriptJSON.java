@@ -421,6 +421,10 @@ public class AddonscriptJSON extends ASBase {
          */
         @Expose
         public String id;
+
+        @Expose
+        public String loaderfile;
+
         /**
          * Optional: Wildcard if empty
          * A version range string, which specifies, which versions of the addon can be used
