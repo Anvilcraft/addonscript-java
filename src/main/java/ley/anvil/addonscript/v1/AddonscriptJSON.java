@@ -377,7 +377,9 @@ public class AddonscriptJSON extends ASBase {
                     }
                 }
             }
-            return null;
+            Meta meta = new Meta();
+            meta.name = link;
+            return meta;
         }
 
     }
@@ -385,7 +387,7 @@ public class AddonscriptJSON extends ASBase {
     public static class Relation {
 
         public Meta getMeta(Indexes indexes) {
-            if(indexes.ADDONS.values().contains(id))
+            if(indexes.ADDONS.values().contains(id) && indexes.ADDONS.get(id).meta != null)
                 return indexes.ADDONS.get(id).meta;
             else if(meta != null)
                 return meta;

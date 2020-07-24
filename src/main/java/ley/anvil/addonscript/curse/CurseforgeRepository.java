@@ -44,6 +44,8 @@ public class CurseforgeRepository implements IRepository {
             } catch (CurseException e) {
                 e.printStackTrace();
             }
+        } else {
+            System.out.println("WARNUNG: No file for Curseforge artifact " + artifact + " found!");
         }
         return meta;
     }
