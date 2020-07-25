@@ -43,18 +43,24 @@ public class AddonscriptJSON extends ASBase {
 
     public void load() {
         indexes.INSTALLERS.put("internal.dir", new InternalDirInstaller());
+        if (repositories != null) {
         for (Repository r : repositories) {
             indexes.REPOSITORIES.put(r.id, r.getRepository());
         }
+        }
+        if (index != null) {
         for (IndexEntry e : index) {
             if (e.type != null && e.type.equals("addon"))
                 indexes.ADDONS.put(e.id, Utils.getFromURL(e.link));
             else if (e.type != null && e.type.equals("version"))
                 indexes.VERSIONS.put(e.versionid, Utils.getFromURL(e.link).getDefaultVersion());
         }
+        }
+        if (versions != null) {
         for (Version v : versions) {
             if (!indexes.VERSIONS.containsKey(v.versionid))
                 indexes.VERSIONS.put(v.versionid, v);
+        }
         }
         loaded = true;
     }
