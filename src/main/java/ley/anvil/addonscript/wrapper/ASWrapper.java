@@ -1,6 +1,7 @@
 package ley.anvil.addonscript.wrapper;
 
 import jdk.nashorn.api.scripting.URLReader;
+import ley.anvil.addonscript.forge.ForgeMeta;
 import ley.anvil.addonscript.installer.InternalDirInstaller;
 import ley.anvil.addonscript.util.HTTPRequest;
 import ley.anvil.addonscript.util.Utils;
@@ -250,10 +251,14 @@ public class ASWrapper {
         }
 
         public boolean hasLocalMeta() {
+            if (Utils.notEmpty(relation.id) && relation.id.equals("forge"))
+                return true;
             return relation.meta != null;
         }
 
         public MetaData getLocalMeta() {
+            if (Utils.notEmpty(relation.id) && relation.id.equals("forge"))
+                return new ForgeMeta();
             if (hasLocalMeta())
                 return new MetaData(relation.meta);
             return new MetaData();
