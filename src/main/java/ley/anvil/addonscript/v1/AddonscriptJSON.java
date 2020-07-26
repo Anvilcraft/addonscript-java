@@ -2,26 +2,14 @@ package ley.anvil.addonscript.v1;
 
 import com.google.gson.annotations.Expose;
 import ley.anvil.addonscript.curse.CurseforgeRepository;
-import ley.anvil.addonscript.forge.ForgeMeta;
-import ley.anvil.addonscript.installer.IInstaller;
-import ley.anvil.addonscript.installer.InternalDirInstaller;
 import ley.anvil.addonscript.maven.MavenRepository;
-import ley.anvil.addonscript.python.PythonInstaller;
 import ley.anvil.addonscript.util.ASBase;
 import ley.anvil.addonscript.util.IRepository;
-import ley.anvil.addonscript.util.Indexes;
-import ley.anvil.addonscript.util.Utils;
-import ley.anvil.addonscript.wrapper.LinkInstPair;
-import org.python.jline.internal.Nullable;
 
 import java.io.Reader;
-import java.util.ArrayList;
 import java.util.List;
 
 public class AddonscriptJSON extends ASBase {
-
-    public Indexes indexes;
-    public boolean loaded;
 
     public static AddonscriptJSON fromJSON(String json) {
         return fromJSON(json, AddonscriptJSON.class);
@@ -35,53 +23,6 @@ public class AddonscriptJSON extends ASBase {
         as.asversion = 1;
         return as;
     }
-
-    public AddonscriptJSON() {
-        indexes = new Indexes();
-        loaded = false;
-    }
-
-    public void load() {
-        indexes.INSTALLERS.put("internal.dir", new InternalDirInstaller());
-        for (Repository r : repositories) {
-            indexes.REPOSITORIES.put(r.id, r.getRepository());
-        }
-        for (IndexEntry e : index) {
-            if (e.type != null && e.type.equals("addon"))
-                indexes.ADDONS.put(e.id, Utils.getFromURL(e.link));
-            else if (e.type != null && e.type.equals("version"))
-                indexes.VERSIONS.put(e.versionid, Utils.getFromURL(e.link).getDefaultVersion());
-        }
-        for (Version v : versions) {
-            if (!indexes.VERSIONS.containsKey(v.versionid))
-                indexes.VERSIONS.put(v.versionid, v);
-        }
-        loaded = true;
-    }
-
-    public Version getDefaultVersion() {
-        for (Version v : versions) {
-            if (v.versionid == -1)
-                return v;
-        }
-        if (versions.size() > 0)
-            return versions.get(0);
-        return new Version();
-    }
-
-    public Version getVersion(int versionid) {
-        if (indexes.VERSIONS.containsKey(versionid))
-            return indexes.VERSIONS.get(versionid);
-        return null;
-    }
-
-    public Version getVersion(String versionCondition) {
-        return null; //TODO Interpret version range
-    }
-
-
-
-    //JSON Parts
 
     /**
      * The ID of the addon
@@ -112,11 +53,6 @@ public class AddonscriptJSON extends ASBase {
     public List<Repository> repositories;
 
     /**
-     * A list of external installers this file uses
-     */
-    public List<Installer> installers;
-
-    /**
      * Optional
      * Meta information for this addon
      */
@@ -124,35 +60,6 @@ public class AddonscriptJSON extends ASBase {
     public Meta meta;
 
     public static class Version implements Comparable<Version> {
-
-        public List<Relation> getRelations(String side, boolean optionals, @Nullable String edition) {
-            List<Relation> list = new ArrayList<>();
-            for (Relation r : relations) {
-                if (r.hasOption(side) && (r.hasOption("required") || (optionals && r.hasOption("optional")) || r.hasOption("edition:" + edition)))
-                    list.add(r);
-            }
-            return list;
-        }
-
-        public List<LinkInstPair> getRelLinks(Indexes indexes, String side, boolean optionals, @Nullable String installer, @Nullable String edition) {
-            List<LinkInstPair> list = new ArrayList<>();
-            for (Relation r : getRelations(side, optionals, edition)) {
-                list.addAll(r.getLinks(indexes, side, optionals, installer, edition));
-            }
-            return list;
-        }
-
-        public List<LinkInstPair> getLinks(Indexes indexes, String side, boolean optionals, @Nullable String installer, @Nullable String edition) {
-            List<LinkInstPair> list = new ArrayList<>();
-
-            for (File file : files) {
-                if (file != null && file.hasOption(side) && (installer == null || installer.equals(file.installer) || installer.equals(file.installer.split(":")[0])) && ((file.hasOption("optional") && optionals) || file.hasOption("edition:" + edition) || file.hasOption("required")))
-                    list.add(new LinkInstPair(file.getLink(indexes), file.installer));
-            }
-
-            return list;
-        }
-
         /**
          * The name of this version
          * (for example: 1.0, 1.1, 2.0)
@@ -283,22 +190,6 @@ public class AddonscriptJSON extends ASBase {
 
     }
 
-    public static class Installer {
-        /**
-         * The ID of this installer
-         * Must be unique to this file
-         */
-        public String id;
-        /**
-         * A link or relative path to a python file, which is an installer
-         */
-        public String link;
-
-        public IInstaller getInstaller() {
-            return new PythonInstaller(link);
-        }
-    }
-
     public static class File {
         /**
          * The ID of this file.
@@ -341,84 +232,9 @@ public class AddonscriptJSON extends ASBase {
         @Expose
         public List<String> options;
 
-        public boolean hasOption(String option) {
-            if (options != null)
-                return option.contains(option);
-            else {
-                switch (option) {
-                    case "client":
-                    case "server":
-                    case "required": return true;
-                    default: return false;
-                }
-            }
-        }
-
-        public String getLink(Indexes indexes) {
-            if (link != null && !link.equals("")) {
-                return link;
-            }
-            else if (artifact != null && !artifact.equals("")) {
-                for (IRepository repo : indexes.REPOSITORIES.values()) {
-                    String url = repo.getFileURL(artifact);
-                    if (!url.equals(""))
-                        return url;
-                }
-            }
-            return "";
-        }
-
-        public Meta getMeta(Indexes indexes) {
-            if (artifact != null && !artifact.equals("")) {
-                for (IRepository repo : indexes.REPOSITORIES.values()) {
-                    Meta meta = repo.getMeta(artifact);
-                    if (meta != null) {
-                        return meta;
-                    }
-                }
-            }
-            Meta meta = new Meta();
-            meta.name = link;
-            return meta;
-        }
-
     }
 
     public static class Relation {
-
-        public Meta getMeta(Indexes indexes) {
-            if(indexes.ADDONS.values().contains(id) && indexes.ADDONS.get(id).meta != null)
-                return indexes.ADDONS.get(id).meta;
-            else if(meta != null)
-                return meta;
-            else if (type != null && type.equals("modloader") && id != null && id.equals("forge"))
-                return new ForgeMeta();
-            else
-                return file.getMeta(indexes);
-        }
-
-        public List<LinkInstPair> getLinks(Indexes indexes, String side, boolean optionals, @Nullable String installer, @Nullable String edition) {
-            List<LinkInstPair> list = new ArrayList<>();
-
-            if (indexes.ADDONS.containsKey(id)) {
-                AddonscriptJSON addon = indexes.ADDONS.get(id);
-                if (!addon.loaded)
-                    addon.load();
-                Version version = addon.getVersion(versions);
-                if (version != null) {
-                    for (File f : version.files) {
-                        if (f != null && f.hasOption(side) && (installer == null || installer.equals(f.installer) || installer.equals(f.installer.split(":")[0])) && ((f.hasOption("optional") && optionals) || f.hasOption("edition:" + edition) || f.hasOption("required")))
-                            list.add(new LinkInstPair(f.getLink(indexes), f.installer));
-                    }
-                }
-            }
-
-            if (file != null && hasOption(side) && (installer == null || installer.equals(file.installer) || installer.equals(file.installer.split(":")[0])) && ((hasOption("optional") && optionals) || hasOption("edition:" + edition) || hasOption("required")))
-                list.add(new LinkInstPair(file.getLink(indexes), file.installer));
-
-            return list;
-        }
-
 
         /**
          * The ID of the relation
@@ -472,21 +288,6 @@ public class AddonscriptJSON extends ASBase {
          */
         @Expose
         public List<String> options;
-
-        public boolean hasOption(String option) {
-            if (options != null)
-                return option.contains(option);
-            else {
-                switch (option) {
-                    case "client":
-                    case "server":
-                    case "required": return true;
-                    default: return false;
-                }
-            }
-        }
-
-
     }
 
     public static class IndexEntry {

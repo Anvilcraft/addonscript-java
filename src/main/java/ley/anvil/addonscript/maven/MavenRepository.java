@@ -1,10 +1,11 @@
 package ley.anvil.addonscript.maven;
 
 import ley.anvil.addonscript.util.IRepository;
-import ley.anvil.addonscript.v1.AddonscriptJSON;
+import ley.anvil.addonscript.wrapper.MetaData;
 
 public class MavenRepository implements IRepository {
 
+    //TODO Complete this
     String url;
 
     public MavenRepository(String url) {
@@ -18,7 +19,7 @@ public class MavenRepository implements IRepository {
     }
 
     @Override
-    public AddonscriptJSON.Meta getMeta(String artifact) {
+    public MetaData getMeta(String artifact) {
         return null;
     }
 }

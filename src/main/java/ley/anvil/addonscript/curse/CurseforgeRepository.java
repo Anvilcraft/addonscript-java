@@ -5,10 +5,8 @@ import com.therandomlabs.curseapi.CurseException;
 import com.therandomlabs.curseapi.file.CurseFile;
 import com.therandomlabs.curseapi.project.CurseProject;
 import ley.anvil.addonscript.util.IRepository;
-import ley.anvil.addonscript.v1.AddonscriptJSON;
+import ley.anvil.addonscript.wrapper.MetaData;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Optional;
 
 public class CurseforgeRepository implements IRepository {
@@ -23,23 +21,18 @@ public class CurseforgeRepository implements IRepository {
     }
 
     @Override
-    public AddonscriptJSON.Meta getMeta(String artifact) {
-        AddonscriptJSON.Meta meta = null;
+    public MetaData getMeta(String artifact) {
+        MetaData meta = null;
         CurseFile file = getFile(artifact);
         if (file != null) {
-            meta = new AddonscriptJSON.Meta();
+            meta = new MetaData();
             try {
                 CurseProject project = file.project();
                 meta.name = project.name();
                 String desc = project.descriptionPlainText();
-                meta.description = Arrays.asList(desc.split("\n"));
+                meta.description = desc.split("\n");
                 meta.website = project.url().toString();
-                meta.contributors = new ArrayList<>();
-                AddonscriptJSON.Contributor owner = new AddonscriptJSON.Contributor();
-                owner.roles = new ArrayList<>();
-                owner.roles.add("owner");
-                owner.name = project.author().name();
-                meta.contributors.add(owner);
+                meta.contributors.put(project.author().name(), new String[]{"owner"});
                 meta.icon = project.logo().url().toString();
             } catch (CurseException e) {
                 e.printStackTrace();
