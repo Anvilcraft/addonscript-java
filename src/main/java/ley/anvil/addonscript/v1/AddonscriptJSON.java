@@ -1,10 +1,7 @@
 package ley.anvil.addonscript.v1;
 
 import com.google.gson.annotations.Expose;
-import ley.anvil.addonscript.curse.CurseforgeRepository;
-import ley.anvil.addonscript.maven.MavenRepository;
 import ley.anvil.addonscript.util.ASBase;
-import ley.anvil.addonscript.util.IRepository;
 
 import java.io.Reader;
 import java.util.List;
@@ -173,20 +170,13 @@ public class AddonscriptJSON extends ASBase {
          * Currently supported: curseforge, forge
          */
         @Expose
+        @Deprecated
         public String type;
         /**
          * The base url of this repository
          */
         @Expose
         public String url;
-
-        public IRepository getRepository() {
-            switch (type) {
-                case "curseforge": return new CurseforgeRepository();
-                case "maven": return new MavenRepository(url);
-                default: return null;
-            }
-        }
 
     }
 
@@ -219,6 +209,10 @@ public class AddonscriptJSON extends ASBase {
          */
         @Expose
         public String artifact;
+        @Expose
+        public String repository;
+        @Expose
+        public String packaging;
         /**
          * Optional: Defaults if empty
          * (Defaults = required, client, server)

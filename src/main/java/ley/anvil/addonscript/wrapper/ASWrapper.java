@@ -1,8 +1,15 @@
 package ley.anvil.addonscript.wrapper;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import jdk.nashorn.api.scripting.URLReader;
+import ley.anvil.addonscript.curse.CurseMeta;
 import ley.anvil.addonscript.forge.ForgeMeta;
+import ley.anvil.addonscript.installer.IInstaller;
 import ley.anvil.addonscript.installer.InternalDirInstaller;
+import ley.anvil.addonscript.maven.ArtifactDestination;
 import ley.anvil.addonscript.util.HTTPRequest;
 import ley.anvil.addonscript.util.Utils;
 import ley.anvil.addonscript.v1.AddonscriptJSON;
@@ -12,37 +19,39 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 public class ASWrapper {
 
     AddonscriptJSON json;
-    Indexes indexes;
-    RepoManager repoManager;
+    Map<String, String> REPOSITORIES;
+    public Map<String, IInstaller> INSTALLERS;
+    public Map<String, AddonscriptJSON> ADDONS;
+    public Map<Integer, ASWrapper.VersionWrapper> VERSIONS;
 
     public ASWrapper(AddonscriptJSON json) {
         this.json = json;
-        indexes = new Indexes();
-        repoManager = new RepoManager();
-        indexes.INSTALLERS.put("internal.dir", new InternalDirInstaller());
+        REPOSITORIES = new HashMap<>();
+        INSTALLERS = new HashMap<>();
+        ADDONS = new HashMap<>();
+        VERSIONS = new HashMap<>();
+        INSTALLERS.put("internal.dir", new InternalDirInstaller());
         if (json.repositories != null) {
             for (AddonscriptJSON.Repository r : json.repositories) {
-                repoManager.addRepository(r.id, r.getRepository());
+                REPOSITORIES.put(r.id, r.url);
             }
         }
         if (json.index != null) {
             for (AddonscriptJSON.IndexEntry e : json.index) {
                 if (e.type != null && e.type.equals("addon"))
-                    indexes.ADDONS.put(e.id, Utils.getFromURL(e.link));
+                    ADDONS.put(e.id, Utils.getFromURL(e.link));
                 //TODO external versions
             }
         }
         if (json.versions != null) {
             for (AddonscriptJSON.Version v : json.versions) {
-                if (!indexes.VERSIONS.containsKey(v.versionid))
-                    indexes.VERSIONS.put(v.versionid, new VersionWrapper(v));
+                if (!VERSIONS.containsKey(v.versionid))
+                    VERSIONS.put(v.versionid, new VersionWrapper(v));
             }
         }
     }
@@ -64,10 +73,6 @@ public class ASWrapper {
         return json.toJSON();
     }
 
-    public RepoManager getRepositories() {
-        return repoManager;
-    }
-
     //Options
 
     public List<String> defaultOptions() {
@@ -77,6 +82,7 @@ public class ASWrapper {
         list.add("required");
         return list;
     }
+
 
     //Versions
 
@@ -91,8 +97,8 @@ public class ASWrapper {
     }
 
     public VersionWrapper getVersion(int versionid) {
-        if (indexes.VERSIONS.containsKey(versionid))
-            return indexes.VERSIONS.get(versionid);
+        if (VERSIONS.containsKey(versionid))
+            return VERSIONS.get(versionid);
         return new VersionWrapper();
     }
 
@@ -195,7 +201,7 @@ public class ASWrapper {
         @HTTPRequest
         public String getLink() {
             if (!Utils.notEmpty(link) && Utils.notEmpty(file.artifact)) {
-                String l = repoManager.resolveArtifact(file.artifact);
+                String l = getArtifact().getPath();
                 if (Utils.notEmpty(l))
                     link = l;
             }
@@ -205,13 +211,21 @@ public class ASWrapper {
         }
 
         public boolean isArtifact() {
-            return Utils.notEmpty(file.artifact);
+            return Utils.notEmpty(file.artifact) && Utils.notEmpty(file.repository);
         }
 
-        public String getArtifact() {
-            if (isArtifact())
-                return file.artifact;
-            return "";
+        public ArtifactDestination getArtifact() {
+            if (isArtifact()) {
+                if (REPOSITORIES.containsKey(file.repository)) {
+                    if (Utils.notEmpty(file.packaging))
+                        return new ArtifactDestination(file.artifact, REPOSITORIES.get(file.repository), file.packaging);
+                    else
+                        return new ArtifactDestination(file.artifact, REPOSITORIES.get(file.repository));
+                }
+                else
+                    throw new RuntimeException("Repository " + file.repository + " not existing");
+            }
+            throw new RuntimeException("This has no artifact");
         }
 
         @Deprecated
@@ -240,7 +254,7 @@ public class ASWrapper {
         }
 
         public boolean isInIndex() {
-            return indexes.ADDONS.containsKey(relation.id);
+            return ADDONS.containsKey(relation.id);
         }
 
         public boolean isModloader() {
@@ -264,9 +278,32 @@ public class ASWrapper {
             return new MetaData();
         }
 
+    }
 
+    public static Map<ArtifactDestination, MetaData> getMetaData(ArtifactDestination[] artifacts) {
+        Map<ArtifactDestination, MetaData> meta = new HashMap<>();
+        List<Integer> curseRequest = new ArrayList<>();
+        for (ArtifactDestination dest : artifacts) {
+            if (dest.isCurseforge())
+                curseRequest.add(dest.getProjectID());
+        }
+        if (curseRequest.size() >= 1) {
+            Gson gson = new GsonBuilder().create();
+            String request = gson.toJson(curseRequest);
+            String response = Utils.httpJSONPost("https://addons-ecs.forgesvc.net/api/v2/addon", request, new HashMap<>());
+            JsonArray arr = gson.fromJson(response, JsonArray.class);
+            for (JsonElement e : arr) {
+                CurseMeta m = gson.fromJson(e, CurseMeta.class);
+                for (ArtifactDestination a : artifacts) {
+                    if (a.id.equals(String.valueOf(m.id))) {
+                        meta.put(a, m.toMeta());
+                        break;
+                    }
+                }
+            }
 
-
+        }
+        return meta;
     }
 
 }

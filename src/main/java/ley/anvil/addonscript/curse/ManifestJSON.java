@@ -62,7 +62,10 @@ public class ManifestJSON extends JSON {
 
         public AddonscriptJSON.Relation toRelation() {
             AddonscriptJSON.Relation rel = new AddonscriptJSON.Relation();
-            rel.file = CurseTools.toArtifact(projectID, fileID);
+            rel.file = new AddonscriptJSON.File();
+            rel.file.repository = "curse";
+            rel.file.artifact = "curse.maven:" + projectID + ":" + fileID;
+            rel.file.installer = "internal.dir:mods";
             rel.options = new ArrayList<>();
             rel.options.add(required ? "required" : "optional");
             rel.options.add("client");
@@ -121,7 +124,12 @@ public class ManifestJSON extends JSON {
         as.meta.contributors.add(getAuthor());
         as.versions.add(getVersion());
 
-        CurseTools.addCurseRepo(as);
+        as.repositories = new ArrayList<>();
+        AddonscriptJSON.Repository curseRepo = new AddonscriptJSON.Repository();
+        curseRepo.id = "curse";
+        curseRepo.type = "curseforge";
+        curseRepo.url = "https://www.cursemaven.com/";
+        as.repositories.add(curseRepo);
 
         return as;
     }
