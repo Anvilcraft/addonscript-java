@@ -63,6 +63,10 @@ public class ASWrapper {
         return json.toJSON();
     }
 
+    public RepoManager getRepositories() {
+        return repoManager;
+    }
+
     //Options
 
     public List<String> defaultOptions() {
@@ -199,8 +203,12 @@ public class ASWrapper {
             throw new RuntimeException("JSON File broken");
         }
 
+        public boolean isArtifact() {
+            return Utils.notEmpty(file.artifact);
+        }
+
         public String getArtifact() {
-            if (Utils.notEmpty(file.artifact))
+            if (isArtifact())
                 return file.artifact;
             return "";
         }
