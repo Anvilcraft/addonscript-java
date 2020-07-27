@@ -9,7 +9,6 @@ import ley.anvil.addonscript.curse.CurseMeta;
 import ley.anvil.addonscript.forge.ForgeMeta;
 import ley.anvil.addonscript.installer.IInstaller;
 import ley.anvil.addonscript.installer.InternalDirInstaller;
-import ley.anvil.addonscript.util.HTTPRequest;
 import ley.anvil.addonscript.util.Utils;
 import ley.anvil.addonscript.v1.AddonscriptJSON;
 import org.apache.maven.artifact.versioning.InvalidVersionSpecificationException;
@@ -196,14 +195,10 @@ public class ASWrapper {
             return Utils.notEmpty(link) && link.startsWith("file://");
         }
 
-        public File asFile(String jsonDir) {
-            if (isFile()) {
-                return new File(Utils.slashEnd(jsonDir) + link.replace("file://", ""));
-            }
-            throw new RuntimeException("This is not a local file, try to check it before calling it.");
+        public FileOrLink get() {
+            return new FileOrLink(getLink());
         }
 
-        @HTTPRequest
         public String getLink() {
             if (!Utils.notEmpty(link) && Utils.notEmpty(file.artifact)) {
                 String l = getArtifact().getPath();
