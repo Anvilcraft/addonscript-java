@@ -1,5 +1,6 @@
 package ley.anvil.addonscript.curse;
 
+import com.google.gson.annotations.Expose;
 import ley.anvil.addonscript.util.JSON;
 import ley.anvil.addonscript.v1.AddonscriptJSON;
 
@@ -12,29 +13,34 @@ public class ManifestJSON extends JSON {
         return gson.fromJson(json, ManifestJSON.class);
     }
 
+    @Expose
     public Minecraft minecraft;
-
+    @Expose
     public String manifestType;
-
+    @Expose
     public int manifestVersion;
-
+    @Expose
     public String name;
-
+    @Expose
     public String version;
-
+    @Expose
     public String author;
-
+    @Expose
     public List<File> files;
-
+    @Expose
     public String overrides = "overrides";
 
     public static class Minecraft {
+        @Expose
         public String version;
+        @Expose
         public List<Modloader> modLoaders;
     }
 
     public static class Modloader {
+        @Expose
         public String id;
+        @Expose
         public boolean primary;
 
         public AddonscriptJSON.Relation toRelation() {
@@ -56,8 +62,11 @@ public class ManifestJSON extends JSON {
     }
 
     public static class File {
+        @Expose
         public int projectID;
+        @Expose
         public int fileID;
+        @Expose
         public boolean required;
 
         public AddonscriptJSON.Relation toRelation() {
@@ -117,11 +126,12 @@ public class ManifestJSON extends JSON {
     public AddonscriptJSON toAS() {
         AddonscriptJSON as = AddonscriptJSON.create();
         as.type = "modpack";
-        as.id = name;
+        as.id = name.toLowerCase();
         as.meta = new AddonscriptJSON.Meta();
         as.meta.contributors = new ArrayList<>();
         as.versions = new ArrayList<>();
         as.meta.contributors.add(getAuthor());
+        as.meta.name = name;
         as.versions.add(getVersion());
 
         as.repositories = new ArrayList<>();
