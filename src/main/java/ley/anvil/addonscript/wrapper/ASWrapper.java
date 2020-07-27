@@ -242,6 +242,13 @@ public class ASWrapper {
             return file;
         }
 
+        public List<String> getOptions() {
+            if (file.options != null)
+                return file.options;
+            else
+                return defaultOptions();
+        }
+
     }
 
     public class RelationWrapper {
@@ -297,6 +304,13 @@ public class ASWrapper {
 
         public AddonscriptJSON.Relation getRelation() {
             return relation;
+        }
+
+        public List<String> getOptions() {
+            if (relation.options != null)
+                return relation.options;
+            else
+                return defaultOptions();
         }
 
     }

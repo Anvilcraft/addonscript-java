@@ -16,7 +16,7 @@ public class ManifestJSON extends JSON {
 
     public String manifestType;
 
-    public String manifestVersion;
+    public int manifestVersion;
 
     public String name;
 
