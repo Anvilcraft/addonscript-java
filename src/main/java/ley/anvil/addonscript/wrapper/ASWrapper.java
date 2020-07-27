@@ -163,6 +163,11 @@ public class ASWrapper {
             return "";
         }
 
+        @Nullable
+        public AddonscriptJSON.Version getVersion() {
+            return version;
+        }
+
     }
 
     public class FileWrapper {
@@ -233,6 +238,10 @@ public class ASWrapper {
             return file.installer;
         }
 
+        public AddonscriptJSON.File getFile() {
+            return file;
+        }
+
     }
 
     public class RelationWrapper {
@@ -284,6 +293,10 @@ public class ASWrapper {
             } catch (InvalidVersionSpecificationException e) {
                 throw new RuntimeException("Error in JSON");
             }
+        }
+
+        public AddonscriptJSON.Relation getRelation() {
+            return relation;
         }
 
     }
