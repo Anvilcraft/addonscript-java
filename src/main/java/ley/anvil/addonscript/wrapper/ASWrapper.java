@@ -9,10 +9,10 @@ import ley.anvil.addonscript.curse.CurseMeta;
 import ley.anvil.addonscript.forge.ForgeMeta;
 import ley.anvil.addonscript.installer.IInstaller;
 import ley.anvil.addonscript.installer.InternalDirInstaller;
-import ley.anvil.addonscript.maven.ArtifactDestination;
 import ley.anvil.addonscript.util.HTTPRequest;
 import ley.anvil.addonscript.util.Utils;
 import ley.anvil.addonscript.v1.AddonscriptJSON;
+import org.apache.maven.artifact.versioning.InvalidVersionSpecificationException;
 
 import javax.annotation.Nullable;
 import java.io.File;
@@ -276,6 +276,14 @@ public class ASWrapper {
             if (hasLocalMeta())
                 return new MetaData(relation.meta);
             return new MetaData();
+        }
+
+        public Versions getVersions() {
+            try {
+                return new Versions(relation.versions);
+            } catch (InvalidVersionSpecificationException e) {
+                throw new RuntimeException("Error in JSON");
+            }
         }
 
     }

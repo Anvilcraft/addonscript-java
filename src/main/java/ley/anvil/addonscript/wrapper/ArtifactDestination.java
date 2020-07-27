@@ -1,4 +1,4 @@
-package ley.anvil.addonscript.maven;
+package ley.anvil.addonscript.wrapper;
 
 import ley.anvil.addonscript.util.Utils;
 
