@@ -52,7 +52,7 @@ public class ManifestJSON extends JSON {
                 rel.options = new ArrayList<>();
                 rel.options.add("required");
                 rel.options.add("client");
-                rel.options.add("required");
+                rel.options.add("server");
                 rel.options.add("included");
                 return rel;
             }
