@@ -10,9 +10,17 @@ import java.net.URL;
 public class FileOrLink {
 
     String link;
+    File asdir;
+    public String installer;
+
 
     public FileOrLink(String link) {
         this.link = link;
+    }
+
+    public FileOrLink(String link, String installer) {
+        this.link = link;
+        this.installer = installer;
     }
 
     public boolean isFile() {
@@ -33,10 +41,21 @@ public class FileOrLink {
      * @param path The path to the directory, in which the Addonscript.json is placed
      * @return A File
      */
+    @Deprecated
     public File getFile(@Nonnull String path) {
         if (isFile())
             return new File(Utils.slashEnd(path) + link.replace("file://", ""));
         throw new RuntimeException("This is no file");
+    }
+
+    /**
+     * To call this, the ASDir should be set. If it isn't set, set it with setASDir before calling this.
+     * @return The File, which is represented by this object
+     */
+    public File getFile() {
+        if (isFile() && isASDirSet())
+            return new File(Utils.slashEnd(asdir.getPath()) + link.replace("file://", ""));
+        throw new RuntimeException("This is no file or the AS Dir was not set");
     }
 
     public URL getURL() {
@@ -48,6 +67,21 @@ public class FileOrLink {
             }
         }
         throw new RuntimeException("This is no URL");
+    }
+
+    /**
+     * In Addonscript file:// links are relative paths from the Addonscript.json,
+     * so you have to specify the path of the directory in which it is placed.
+     * @param dir The path to the directory, in which the Addonscript.json is placed
+     * @return This FileOrLink object
+     */
+    public FileOrLink setASDir(File dir) {
+        asdir = dir;
+        return this;
+    }
+
+    public boolean isASDirSet() {
+        return asdir != null;
     }
 
 }

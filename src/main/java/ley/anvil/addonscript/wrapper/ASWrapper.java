@@ -27,6 +27,8 @@ public class ASWrapper {
     public Map<String, IInstaller> INSTALLERS;
     public Map<String, AddonscriptJSON> ADDONS;
     public Map<Integer, ASWrapper.VersionWrapper> VERSIONS;
+    @Nullable
+    File asdir;
 
     public ASWrapper(AddonscriptJSON json) {
         this.json = json;
@@ -57,6 +59,7 @@ public class ASWrapper {
 
     public ASWrapper(File file) throws FileNotFoundException {
         this(AddonscriptJSON.read(new FileReader(file)));
+        asdir = file.getParentFile();
     }
 
     public ASWrapper(URL url) {
@@ -122,7 +125,7 @@ public class ASWrapper {
             return version != null;
         }
 
-        public List<RelationWrapper> getRelations(String[] conditions, @Nullable String type) {
+        public List<RelationWrapper> getRelations(String[] conditions, @Nullable String[] types) {
             List<RelationWrapper> list = new ArrayList<>();
             if (exists() && version.relations != null) {
                 for (AddonscriptJSON.Relation r : version.relations) {
@@ -131,7 +134,7 @@ public class ASWrapper {
                         opt = r.options;
                     else
                         opt = defaultOptions();
-                    if (opt.containsAll(Arrays.asList(conditions)) && (type== null || r.type.equals(type))) {
+                    if (opt.containsAll(Arrays.asList(conditions)) && (types == null || Arrays.asList(types).contains(r.type))) {
                         list.add(new RelationWrapper(r));
                     }
                 }
@@ -196,7 +199,7 @@ public class ASWrapper {
         }
 
         public FileOrLink get() {
-            return new FileOrLink(getLink());
+            return new FileOrLink(getLink(), file.installer).setASDir(asdir);
         }
 
         public String getLink() {
