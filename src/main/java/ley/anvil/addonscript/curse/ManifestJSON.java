@@ -48,11 +48,11 @@ public class ManifestJSON extends JSON {
                 AddonscriptJSON.Relation rel = new AddonscriptJSON.Relation();
                 rel.type = "modloader";
                 rel.id = "forge";
-                rel.versions = "[" + id.replaceAll("forge", "") + "]";
+                rel.versions = "[" + id.replaceAll("forge-", "") + "]";
                 rel.options = new ArrayList<>();
                 rel.options.add("required");
                 rel.options.add("client");
-                rel.options.add("required");
+                rel.options.add("server");
                 rel.options.add("included");
                 return rel;
             }
