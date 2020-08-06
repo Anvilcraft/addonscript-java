@@ -2,3 +2,4 @@
 .idea
 src/test
 build
+gradle.properties

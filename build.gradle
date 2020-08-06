@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+    id 'maven-publish'
 }
 
 group 'ley.anvil'
@@ -7,16 +8,50 @@ version '1.0-SNAPSHOT'
 
 sourceCompatibility = 1.8
 
+configurations {
+    deployerJars
+}
+
 repositories {
     mavenCentral()
-    maven { url 'https://jitpack.io' }
 }
 
 dependencies {
     compile 'com.google.code.gson:gson:+'
     compile 'com.google.code.findbugs:jsr305:3.0.2'
     compile 'org.apache.maven:maven-artifact:3.6.3'
-
-
+    deployerJars "org.apache.maven.wagon:wagon-ssh:2.2"
     testCompile group: 'junit', name: 'junit', version: '4.12'
+}
+
+task sourceJar(type: Jar) {
+    classifier 'sources'
+    from sourceSets.main.allJava
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            artifactId "addonscript-java"
+            from components.java
+            artifact tasks.sourceJar
+        }
+    }
+    repositories {
+        maven {
+            credentials {
+                username findProperty("username")
+                password findProperty("password")
+            }
+            url = "https://data.tilera.xyz/maven"
+        }
+        maven {
+            credentials {
+                username findProperty("githubname")
+                password findProperty("token")
+            }
+            url = "https://maven.pkg.github.com/Anvilcraft/addonscript-java"
+        }
+        mavenLocal()
+    }
 }
