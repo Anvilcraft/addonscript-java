@@ -19,6 +19,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.net.URL;
 import java.util.*;
+import java.util.function.Predicate;
 
 public class ASWrapper {
 
@@ -126,15 +127,22 @@ public class ASWrapper {
         }
 
         public List<RelationWrapper> getRelations(String[] conditions, @Nullable String[] types) {
+            Predicate<AddonscriptJSON.Relation> predicate = relation -> {
+                List<String> opt;
+                if (relation.options != null)
+                    opt = relation.options;
+                else
+                    opt = defaultOptions();
+                return opt.containsAll(Arrays.asList(conditions)) && (types == null || Arrays.asList(types).contains(relation.type));
+            };
+            return getRelations(predicate);
+        }
+
+        public List<RelationWrapper> getRelations(Predicate<AddonscriptJSON.Relation> predicate) {
             List<RelationWrapper> list = new ArrayList<>();
             if (exists() && version.relations != null) {
                 for (AddonscriptJSON.Relation r : version.relations) {
-                    List<String> opt;
-                    if (r.options != null)
-                        opt = r.options;
-                    else
-                        opt = defaultOptions();
-                    if (opt.containsAll(Arrays.asList(conditions)) && (types == null || Arrays.asList(types).contains(r.type))) {
+                    if (predicate.test(r)) {
                         list.add(new RelationWrapper(r));
                     }
                 }
@@ -143,15 +151,25 @@ public class ASWrapper {
         }
 
         public List<FileWrapper> getFiles(String[] conditions, @Nullable String installer) {
+            Predicate<AddonscriptJSON.File> predicate = new Predicate<AddonscriptJSON.File>() {
+                @Override
+                public boolean test(AddonscriptJSON.File file) {
+                    List<String> opt;
+                    if (file.options != null)
+                        opt = file.options;
+                    else
+                        opt = defaultOptions();
+                    return opt.containsAll(Arrays.asList(conditions)) && (installer == null || file.installer.startsWith(installer));
+                }
+            };
+            return getFiles(predicate);
+        }
+
+        public List<FileWrapper> getFiles(Predicate<AddonscriptJSON.File> predicate) {
             List<FileWrapper> list = new ArrayList<>();
             if (exists() && version.files != null) {
                 for (AddonscriptJSON.File f : version.files) {
-                    List<String> opt;
-                    if (f.options != null)
-                        opt = f.options;
-                    else
-                        opt = defaultOptions();
-                    if (opt.containsAll(Arrays.asList(conditions)) && (installer == null || f.installer.startsWith(installer))) {
+                    if (predicate.test(f)) {
                         list.add(new FileWrapper(f));
                     }
                 }
