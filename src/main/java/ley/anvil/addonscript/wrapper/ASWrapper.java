@@ -329,6 +329,19 @@ public class ASWrapper {
                 return defaultOptions();
         }
 
+        @Deprecated
+        public FileOrLink getForgeUniversal() {
+            Versions v = getVersions();
+            String lat = v.latest;
+            if (!lat.contains("-"))
+                throw new RuntimeException("Invalid Forge version: " + lat + " must include the Minecraft version at the beginning seperated with a - from the forge version.");
+            if (Utils.notEmpty(lat)) {
+                String link  = new ArtifactDestination("net.minecraftforge:forge:" + lat + ":universal", "https://files.minecraftforge.net/maven/").getPath();
+                return new FileOrLink(link);
+            }
+            throw new RuntimeException("No version specified for forge");
+        }
+
     }
 
     public static Map<ArtifactDestination, MetaData> getMetaData(ArtifactDestination[] artifacts) {

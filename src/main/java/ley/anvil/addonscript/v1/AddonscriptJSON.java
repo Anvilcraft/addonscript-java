@@ -2,6 +2,7 @@ package ley.anvil.addonscript.v1;
 
 import com.google.gson.annotations.Expose;
 import ley.anvil.addonscript.util.ASBase;
+import ley.anvil.addonscript.util.Upcoming;
 
 import java.io.Reader;
 import java.util.List;
@@ -196,7 +197,14 @@ public class AddonscriptJSON extends ASBase {
          * Installer ID can be internal.&lt;some internal installer&gt;
          */
         @Expose
-        public String installer = "internal.dir:mods";
+        public String installer = "internal.dir";
+        /**
+         * This are the arguments for the installer
+         * Each installer needs other arguments and others need none.
+         */
+        @Upcoming
+        @Expose
+        public List<String> arguments;
         /**
          * Optional: Use this or artifact
          * A link to this file. Can also point to a relative file or directory by using file://&lt;relative path&gt;.
@@ -237,6 +245,7 @@ public class AddonscriptJSON extends ASBase {
         @Expose
         public String id;
 
+        @Deprecated
         @Expose
         public String loaderfile;
 

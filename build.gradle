@@ -1,3 +1,4 @@
+
 plugins {
     id 'java'
     id 'maven-publish'
@@ -32,7 +33,7 @@ task sourceJar(type: Jar) {
 publishing {
     publications {
         mavenJava(MavenPublication) {
-            artifactId "addonscript-java"
+            artifactId "addonscript"
             from components.java
             artifact tasks.sourceJar
         }
@@ -52,6 +53,5 @@ publishing {
             }
             url = "https://maven.pkg.github.com/Anvilcraft/addonscript-java"
         }
-        mavenLocal()
     }
 }
