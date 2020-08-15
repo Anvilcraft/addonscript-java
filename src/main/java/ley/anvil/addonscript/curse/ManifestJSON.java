@@ -43,12 +43,12 @@ public class ManifestJSON extends JSON {
         @Expose
         public boolean primary;
 
-        public AddonscriptJSON.Relation toRelation() {
+        public AddonscriptJSON.Relation toRelation(String mcv) {
             if (id != null && id.startsWith("forge-")) {
                 AddonscriptJSON.Relation rel = new AddonscriptJSON.Relation();
                 rel.type = "modloader";
                 rel.id = "forge";
-                rel.versions = "[" + id.replaceAll("forge-", "") + "]";
+                rel.versions = "[" + id.replaceAll("forge", mcv) + "]";
                 rel.options = new ArrayList<>();
                 rel.options.add("required");
                 rel.options.add("client");
@@ -116,7 +116,7 @@ public class ManifestJSON extends JSON {
 
         if (minecraft != null) {
             for (Modloader l : minecraft.modLoaders) {
-                version.relations.add(l.toRelation());
+                version.relations.add(l.toRelation(minecraft.version));
             }
         }
         
