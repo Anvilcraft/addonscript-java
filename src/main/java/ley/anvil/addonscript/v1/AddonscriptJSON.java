@@ -200,7 +200,6 @@ public class AddonscriptJSON extends ASBase {
         public String installer = "internal.dir";
         /**
          * This are the arguments for the installer
-         * Each installer needs other arguments and others need none.
          */
         @Upcoming
         @Expose

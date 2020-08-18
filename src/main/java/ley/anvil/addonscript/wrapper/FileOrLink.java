@@ -11,14 +11,14 @@ public class FileOrLink {
 
     String link;
     File asdir;
-    public String installer;
+    public IInstaller installer;
 
 
     public FileOrLink(String link) {
         this.link = link;
     }
 
-    public FileOrLink(String link, String installer) {
+    public FileOrLink(String link, IInstaller installer) {
         this.link = link;
         this.installer = installer;
     }
@@ -82,6 +82,10 @@ public class FileOrLink {
 
     public boolean isASDirSet() {
         return asdir != null;
+    }
+
+    public IInstaller getInstaller() {
+        return installer;
     }
 
 }

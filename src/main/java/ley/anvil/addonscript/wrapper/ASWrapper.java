@@ -7,8 +7,6 @@ import com.google.gson.JsonElement;
 import jdk.nashorn.api.scripting.URLReader;
 import ley.anvil.addonscript.curse.CurseMeta;
 import ley.anvil.addonscript.forge.ForgeMeta;
-import ley.anvil.addonscript.installer.IInstaller;
-import ley.anvil.addonscript.installer.InternalDirInstaller;
 import ley.anvil.addonscript.util.Utils;
 import ley.anvil.addonscript.v1.AddonscriptJSON;
 import org.apache.maven.artifact.versioning.InvalidVersionSpecificationException;
@@ -25,7 +23,6 @@ public class ASWrapper {
 
     AddonscriptJSON json;
     Map<String, String> REPOSITORIES;
-    public Map<String, IInstaller> INSTALLERS;
     public Map<String, AddonscriptJSON> ADDONS;
     public Map<Integer, ASWrapper.VersionWrapper> VERSIONS;
     @Nullable
@@ -34,10 +31,8 @@ public class ASWrapper {
     public ASWrapper(AddonscriptJSON json) {
         this.json = json;
         REPOSITORIES = new HashMap<>();
-        INSTALLERS = new HashMap<>();
         ADDONS = new HashMap<>();
         VERSIONS = new HashMap<>();
-        INSTALLERS.put("internal.dir", new InternalDirInstaller());
         if (json.repositories != null) {
             for (AddonscriptJSON.Repository r : json.repositories) {
                 REPOSITORIES.put(r.id, r.url);
@@ -217,7 +212,7 @@ public class ASWrapper {
         }
 
         public FileOrLink get() {
-            return new FileOrLink(getLink(), file.installer).setASDir(asdir);
+            return new FileOrLink(getLink(), IInstaller.create(file.installer, file.arguments)).setASDir(asdir);
         }
 
         public String getLink() {
